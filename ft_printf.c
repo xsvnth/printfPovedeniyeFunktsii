@@ -68,10 +68,7 @@ int	ft_printf(const char *format, ...)
 			i++;
 		}
 		else
-		{
-			write(1, &format[i], 1);
-			count++;
-		}
+			count += write(1, &format[i], 1);
 		i++;
 	}
 	va_end(args);
