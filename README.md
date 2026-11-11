@@ -124,9 +124,18 @@ The following resources were useful for understanding the concepts involved in t
 - [Variadic Functions in C — GeeksforGeeks](https://www.geeksforgeeks.org/c/variadic-functions-in-c/)
 - [CodeVault — Variadic Functions in C](https://www.youtube.com/watch?v=oDC208zvsdg)
 - [Clang AST Dump](https://clang.llvm.org/docs/IntroductionToTheClangAST.html)
+
   ```bash
   echo '#include <stdarg.h>
   va_list args;' | clang -Xclang -ast-dump -fsyntax-only -x c -
+  ```
+
+- **Inspect GCC's `va_list` implementation (assembly + debug information)**
+
+  ```bash
+  gcc -S -g /tmp/inspect_va.c -o /tmp/inspect_va.s
+  grep -n -E 'gp_offset|fp_offset|overflow_arg_area|reg_save_area|__va_list_tag|size args' /tmp/inspect_va.s
+  ```
 ```
 
 ### AI Usage
