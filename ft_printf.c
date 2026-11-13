@@ -6,7 +6,7 @@
 /*   By: ahmelamr <ahmelamr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/07 19:03:32 by ahmelamr          #+#    #+#             */
-/*   Updated: 2026/11/09 21:32:44 by ahmelamr         ###   ########.fr       */
+/*   Updated: 2026/11/12 18:23:50 by ahmelamr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,26 +19,23 @@ int	ft_putchar(char c)
 
 int	conversion(char c, va_list args)
 {
-	int	count;
-
-	count = 0;
 	if (c == 'd' || c == 'i')
-		count += ft_putnbr(va_arg(args, int));
+		return (ft_putnbr(va_arg(args, int)));
 	else if (c == 'u')
-		count += ft_putunbr(va_arg(args, unsigned int));
+		return (ft_putunbr(va_arg(args, unsigned int)));
 	else if (c == 's')
-		count += ft_putstr(va_arg(args, char *));
+		return (ft_putstr(va_arg(args, char *)));
 	else if (c == 'c')
-		count += ft_putchar(va_arg(args, int));
+		return (ft_putchar(va_arg(args, int)));
 	else if (c == 'X')
-		count += ft_puthex(va_arg(args, unsigned int), 1);
+		return (ft_puthex(va_arg(args, unsigned int), 1));
 	else if (c == 'x')
-		count += ft_puthex(va_arg(args, unsigned int), 0);
+		return (ft_puthex(va_arg(args, unsigned int), 0));
 	else if (c == 'p')
-		count += ft_putptr(va_arg(args, void *));
+		return (ft_putptr(va_arg(args, void *)));
 	else if (c == '%')
-		count += ft_putchar('%');
-	return (count);
+		return (ft_putchar('%'));
+	return (0);
 }
 
 int	is_conversion(char c)
@@ -49,28 +46,44 @@ int	is_conversion(char c)
 	return (0);
 }
 
-int	ft_printf(const char *format, ...)
+int	conversion_handler(const char *format, va_list args)
 {
-	int		i;
-	va_list	args;
-	int		count;
+	int	i;
+	int	count;
+	int	check;
 
 	i = 0;
 	count = 0;
-	if (!format)
-		return (0);
-	va_start(args, format);
+	check = 0;
 	while (format[i])
 	{
-		if (format[i] == '%' && is_conversion(format[i + 1]))
+		if (format[i] == '%' && !format[i + 1])
+			return (-1);
+		else if (format[i] == '%' && is_conversion(format[i + 1]))
 		{
-			count += conversion(format[i + 1], args);
+			check = conversion(format[i + 1], args);
 			i++;
 		}
 		else
-			count += write(1, &format[i], 1);
+			check = write(1, &format[i], 1);
+		if (check < 0)
+			return (-1);
+		count += check;
 		i++;
 	}
+	return (count);
+}
+
+int	ft_printf(const char *format, ...)
+{
+	int		count;
+	va_list	args;
+
+	if (!format)
+		return (-1);
+	count = 0;
+	va_start(args, format);
+	count = conversion_handler(format, args);
 	va_end(args);
 	return (count);
 }
